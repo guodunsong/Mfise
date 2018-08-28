@@ -1,0 +1,36 @@
+//
+//  MfiseHeader.pch
+//  Mfise
+//
+//  Created by issuser on 2018/8/21.
+//  Copyright © 2018年 issuser. All rights reserved.
+//
+
+#ifndef MfiseHeader_pch
+#define MfiseHeader_pch
+
+#import "UINavigationBar+Awesome.h"
+#import "BaseController.h"
+#import "BaseNavigationController.h"
+#import "Masonry.h"
+#import "MJExtension.h"
+#import "SVProgressHUD.h"
+#import "Toast.h"
+#import "UserMgr.h"
+#import "RequestTool.h"
+#import "URLTool.h"
+#import "UIResponder+Router.h"
+
+
+#define kAppDelegate [UIApplication sharedApplication].delegate
+#define kScreenWidth   [UIScreen mainScreen].bounds.size.width
+#define kScreenHeight [UIScreen mainScreen].bounds.size.height
+
+#define RGBHex(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
+#define RGBHexAlpha(rgbValue,a) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:(a)]
+
+
+
+
+
+#endif /* MfiseHeader_pch */
