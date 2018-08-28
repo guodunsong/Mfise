@@ -31,11 +31,12 @@
 - (void)connectBleDevice:(BLEPeripheral *)peripheral tag:(NSInteger)tag;
 - (void)disconnect;
 
+
 /**
  获取数据
 
- @param peripheral peripheral description
- @param params 蓝牙命令参数
+ @param tag tag description
+ @param params params description
  */
 - (void)fetchWithTag:(NSInteger)tag params:(NSDictionary *)params;
 

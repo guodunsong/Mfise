@@ -24,7 +24,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="sDg-Yc-8fu" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-855" y="156"/>
+            <point key="canvasLocation" x="-1274" y="154"/>
         </scene>
         <!--Home Controller-->
         <scene sceneID="nlZ-8b-x9L">
@@ -403,7 +403,7 @@
                     <nil key="simulatedTopBarMetrics"/>
                     <connections>
                         <outlet property="nickLbl" destination="Moc-IA-2g6" id="T69-Yf-xVG"/>
-                        <segue destination="kIR-SM-1Yd" kind="show" id="vik-gG-eBp"/>
+                        <segue destination="kIR-SM-1Yd" kind="show" identifier="SingnallistSegue" id="vik-gG-eBp"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eZh-f5-bas" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -433,7 +433,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="-108" y="154.27286356821591"/>
+            <point key="canvasLocation" x="-574" y="155"/>
         </scene>
         <!--终端列表-->
         <scene sceneID="xIJ-vV-1Fj">
@@ -555,6 +555,9 @@
                                                             <color key="textColor" red="0.40000000000000002" green="0.40000000000000002" blue="0.40000000000000002" alpha="1" colorSpace="calibratedRGB"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
+                                                        <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="Lbd-6l-m3Y">
+                                                            <rect key="frame" x="174" y="15" width="20" height="20"/>
+                                                        </activityIndicatorView>
                                                     </subviews>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <constraints>
@@ -565,9 +568,11 @@
                                                         <constraint firstItem="7cM-Bq-cAN" firstAttribute="leading" secondItem="B3q-O2-xJF" secondAttribute="trailing" id="XPH-gW-qhi"/>
                                                         <constraint firstItem="7cM-Bq-cAN" firstAttribute="centerY" secondItem="B3q-O2-xJF" secondAttribute="centerY" id="Y3H-Pm-Vqa"/>
                                                         <constraint firstItem="B3q-O2-xJF" firstAttribute="top" secondItem="WYw-5e-Yla" secondAttribute="top" constant="3" id="fOM-cj-ipC"/>
+                                                        <constraint firstItem="Lbd-6l-m3Y" firstAttribute="leading" secondItem="7cM-Bq-cAN" secondAttribute="trailing" constant="8" id="kgw-m3-yVr"/>
                                                         <constraint firstItem="B3q-O2-xJF" firstAttribute="centerY" secondItem="WYw-5e-Yla" secondAttribute="centerY" id="qiB-YQ-Lg2"/>
                                                         <constraint firstAttribute="trailing" secondItem="2G5-bh-Oli" secondAttribute="trailing" constant="12" id="sbJ-U0-hv3"/>
                                                         <constraint firstAttribute="bottom" secondItem="B3q-O2-xJF" secondAttribute="bottom" constant="3" id="tbY-aB-wsg"/>
+                                                        <constraint firstItem="Lbd-6l-m3Y" firstAttribute="centerY" secondItem="7cM-Bq-cAN" secondAttribute="centerY" id="usS-FV-AKH"/>
                                                     </constraints>
                                                     <userDefinedRuntimeAttributes>
                                                         <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
@@ -587,6 +592,7 @@
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <connections>
                                             <outlet property="checkBtn" destination="B3q-O2-xJF" id="Wtp-zL-k2I"/>
+                                            <outlet property="indicatorView" destination="Lbd-6l-m3Y" id="wak-E7-X01"/>
                                             <outlet property="rssiLbl" destination="VVe-ij-xsg" id="8Jt-QD-lZ8"/>
                                             <outlet property="titleLbl" destination="7cM-Bq-cAN" id="dkz-qG-c0q"/>
                                             <outlet property="wrapView" destination="WYw-5e-Yla" id="J7n-Wq-Uik"/>
@@ -629,12 +635,12 @@
                         <outlet property="countLbl" destination="Ylz-sx-3HX" id="6dA-GA-brQ"/>
                         <outlet property="refreshBtn" destination="hyL-B4-WpT" id="Gph-yz-0Wp"/>
                         <outlet property="tableView" destination="s9q-5N-6nS" id="yNu-hl-dFJ"/>
-                        <segue destination="exW-6l-Hca" kind="show" id="9ug-6f-rca"/>
+                        <segue destination="exW-6l-Hca" kind="show" identifier="TerminalDetailSegue" id="9ug-6f-rca"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Cv5-wh-DG7" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="664.79999999999995" y="152.47376311844079"/>
+            <point key="canvasLocation" x="166" y="156"/>
         </scene>
         <!--终端详情-->
         <scene sceneID="K0b-xW-tet">
@@ -1182,7 +1188,7 @@
                     </connections>
                 </tapGestureRecognizer>
             </objects>
-            <point key="canvasLocation" x="1429.5999999999999" y="151.57421289355324"/>
+            <point key="canvasLocation" x="953" y="153"/>
         </scene>
     </scenes>
     <resources>

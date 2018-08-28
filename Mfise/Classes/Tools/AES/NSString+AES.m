@@ -56,15 +56,15 @@ static NSString *const AES_IV_PARAMETER = @"";
     return decStr;
 }
 
+
 /**
- *  AES加解密算法
- *
- *  @param operation kCCEncrypt（加密）kCCDecrypt（解密）
- *  @param data      待操作Data数据
- *  @param key       key
- *  @param iv        向量
- *
- *  @return
+ AES加解密算法
+
+ @param operation kCCEncrypt（加密）kCCDecrypt（解密）
+ @param data 待操作Data数据
+ @param key key
+ @param iv 向量
+ @return return value description
  */
 - (NSData *)AES128operation:(CCOperation)operation data:(NSData *)data key:(NSString *)key iv:(NSString *)iv {
     char keyPtr[kCCKeySizeAES128 + 1];

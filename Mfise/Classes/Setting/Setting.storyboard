@@ -19,7 +19,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
-                        <segue destination="Hbd-PE-MrV" kind="relationship" relationship="rootViewController" id="HF8-Cv-LIH"/>
+                        <segue destination="Hbd-PE-MrV" kind="relationship" relationship="rootViewController" id="XzN-yB-U23"/>
                     </connections>
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="tYI-G7-yLV" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -122,15 +122,15 @@
                     </navigationItem>
                     <connections>
                         <outlet property="collectionView" destination="0BM-wh-jYH" id="EY3-Pt-2IQ"/>
-                        <segue destination="NMs-8V-SmI" kind="show" id="C2h-Nr-vrl"/>
-                        <segue destination="EUW-81-vK5" kind="show" id="bel-zV-fFp"/>
-                        <segue destination="EVf-B7-1q4" kind="show" id="Ccd-Iq-X9o"/>
-                        <segue destination="vA5-mY-hSf" kind="show" id="CYN-Jl-BVV"/>
+                        <segue destination="NMs-8V-SmI" kind="show" identifier="UserInfoSegue" id="C2h-Nr-vrl"/>
+                        <segue destination="EUW-81-vK5" kind="show" identifier="HelpSegue" id="bel-zV-fFp"/>
+                        <segue destination="EVf-B7-1q4" kind="show" identifier="BindWarehouseSegue" id="Ccd-Iq-X9o"/>
+                        <segue destination="vA5-mY-hSf" kind="show" identifier="JobRecordSegue" id="CYN-Jl-BVV"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="NW8-0z-MJK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="143" y="-693"/>
+            <point key="canvasLocation" x="-145" y="-695"/>
         </scene>
         <!--用户信息-->
         <scene sceneID="nlg-nd-Iy4">
@@ -276,7 +276,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kgJ-gE-q2u" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-720" y="125"/>
+            <point key="canvasLocation" x="-721" y="167"/>
         </scene>
         <!--帮助与支持-->
         <scene sceneID="Qt4-nv-JfD">
@@ -395,7 +395,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="30i-TX-bdL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="4" y="125"/>
+            <point key="canvasLocation" x="-146" y="179"/>
         </scene>
         <!--绑定仓库-->
         <scene sceneID="bSA-sP-86Q">
@@ -530,7 +530,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cG8-C3-IPu" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="742.5" y="124.64788732394366"/>
+            <point key="canvasLocation" x="472" y="284"/>
         </scene>
         <!--作业记录-->
         <scene sceneID="Azi-Qn-ovq">
@@ -639,12 +639,12 @@
                         <outlet property="curTabBtn" destination="Lgn-bo-yJR" id="kSS-vf-jpe"/>
                         <outlet property="tabView" destination="ufY-2B-ehy" id="o1N-8e-J88"/>
                         <outlet property="underlineLbl" destination="ccW-pF-amT" id="aTg-fw-KHD"/>
-                        <segue destination="DbQ-5q-Ocj" kind="show" id="O9Y-2g-EMH"/>
+                        <segue destination="DbQ-5q-Ocj" kind="show" identifier="JobRecordChildSegue" id="O9Y-2g-EMH"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="av6-vz-pvJ" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1500" y="124.58770614692655"/>
+            <point key="canvasLocation" x="1303" y="284"/>
         </scene>
         <!--Job Record Child Controller-->
         <scene sceneID="reD-tJ-3gk">
@@ -928,7 +928,7 @@
                 </tapGestureRecognizer>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="g7O-kz-Zwz" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="2234" y="125"/>
+            <point key="canvasLocation" x="1842" y="284"/>
         </scene>
     </scenes>
     <resources>

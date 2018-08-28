@@ -181,8 +181,8 @@
         [UIView animateWithDuration:0.3 animations:^{
             backgroundView.alpha = 1;
         } completion:^(BOOL finished) {
-            [_backgroundView removeFromSuperview];
-            _backgroundView = backgroundView;
+            [self.backgroundView removeFromSuperview];
+            self.backgroundView = backgroundView;
             [self addSingleTapGesture];
         }];
     }

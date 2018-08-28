@@ -11,6 +11,7 @@
 
 @interface SingnallistCell : UITableViewCell
 @property (weak, nonatomic) IBOutlet UIButton *checkBtn;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *indicatorView;
 
 @property(nonatomic, strong) NSIndexPath *indexPath;
 @property(nonatomic, strong) BLEPeripheral *peripheral;

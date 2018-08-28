@@ -33,6 +33,7 @@
 
 //批量配置的索引号
 @property(nonatomic, assign) NSUInteger curIndex;
+@property(nonatomic, assign) BOOL configuring;
 
 @end
 
@@ -40,6 +41,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    [SVProgressHUD setDefaultMaskType:(SVProgressHUDMaskTypeGradient)];
     [self.navigationController.navigationBar setHidden:NO];
     [self setupView];
     
@@ -68,6 +70,10 @@
 
 - (void)executeBatchConfig:(NSInteger) index {
     _curIndex = index;
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.tableView reloadData];
+    });
     BLEPeripheral *peripheral = [self.selectedArr objectAtIndex:index];
     if (peripheral.state == BLEPeripheralStateUnknown) {
         [SVProgressHUD showWithStatus:@"正在连接设备"];
@@ -188,6 +194,7 @@
         __strong __typeof(weakself)strongself = weakself;
         NSLog(@">>>:%@",str);
         strongself.uploadRate = str;
+        strongself.configuring = YES;   //开始配置
         [strongself executeBatchConfig:0];
     };
     
@@ -242,8 +249,17 @@
     cell.checkBtn.selected = [_selectedIndexSet containsIndex:indexPath.row];
     [cell setValue:indexPath forKeyPath:@"indexPath"];
     [cell setValue:peripheral forKeyPath:@"peripheral"];
+   
+    cell.indicatorView.hidden = YES;
+    [cell.indicatorView stopAnimating];
+    if (self.configuring) {
+        NSInteger index = [_dataArr indexOfObject: self.selectedArr[self.curIndex]];
+        if (indexPath.row == index) {
+            cell.indicatorView.hidden = NO;
+            [cell.indicatorView startAnimating];
+        }
+    }
 
-    
     return cell;
 }
 
@@ -298,6 +314,8 @@
         return;
     }
     
+    self.configuring = NO;
+    [self.tableView reloadData];
     [SVProgressHUD showSuccessWithStatus:@"批量配置完成"];
 }
 
