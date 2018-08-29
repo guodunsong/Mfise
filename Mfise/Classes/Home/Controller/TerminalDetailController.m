@@ -10,6 +10,7 @@
 #import "BlePalletManager.h"
 #import "CXDatePickerView.h"
 #import "LCActionSheet.h"
+#import "UIAlertView+BlocksKit.h"
 
 @interface TerminalDetailController ()<BlePalletManagerDelegate> {
   
@@ -31,6 +32,7 @@
 @property (nonatomic, strong) BlePalletManager *blePallteMgr;
 @property (nonatomic, strong) NSMutableArray *historyArr;
 @property (nonatomic, assign) NSInteger historyIndex;
+@property (nonatomic, assign) BOOL fetchHistory;
 
 
 @end
@@ -113,6 +115,7 @@
     [self.tableView reloadData];
 }
 
+
 - (NSMutableDictionary *)itemDic:(NSDictionary *)dic {
     NSMutableDictionary *itemDic = [[NSMutableDictionary alloc] initWithDictionary:dic];
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
@@ -159,13 +162,6 @@
         return;
     }
     
-//    NSMutableDictionary *itemDic = [[NSMutableDictionary alloc] initWithDictionary:self.terminalInfoDic];
-//    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-//    [formatter setDateFormat:@"YYYY-MM-dd HH:mm:ss"];
-//    NSDate *datenow = [NSDate date];
-//    NSString *currentTimeString = [formatter stringFromDate:datenow];
-//    itemDic[@"currentTimeString"] = currentTimeString;
-    
     NSMutableDictionary *itemDic = [self itemDic:self.terminalInfoDic];
     NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
     params[@"positions"] = @[itemDic];
@@ -186,9 +182,10 @@
 }
 
 - (void)fetchHistoryData:(NSInteger) index {
+    _fetchHistory = YES;
     
-    if (index >= 13) {
-        
+    if (index >= 14) {
+        _fetchHistory = NO;
         if (self.historyArr.count <= 0) return;
         
         NSMutableArray *arr = [NSMutableArray array];
@@ -204,6 +201,7 @@
         return;
     }
     
+    _historyIndex = index;
     [SVProgressHUD showWithStatus:@"正在读取数据"];
     NSString *ICCID = [self.peripheral.peripheral.name stringByReplacingOccurrencesOfString:@"SP" withString:@""];
     NSDictionary *jsonDic = @{@"CMD":@(0),@"ICCID":ICCID,@"Index":@(index)};
@@ -348,6 +346,20 @@
 }
 
 - (void)blePalletManager:(BlePalletManager *)blePalletManager tag:(NSInteger)tag didWithError:(NSString *)error {
+    if (_historyArr.count < 14 && _fetchHistory) {//获取历史记录
+        UIAlertView *alertView = [UIAlertView bk_showAlertViewWithTitle:@"错误提示" message:@"获取历史记录中途失败，是否继续获取" cancelButtonTitle:@"取消" otherButtonTitles:@[@"继续"] handler:^(UIAlertView *alertView, NSInteger buttonIndex) {
+            if (buttonIndex == 1) {
+                [self fetchHistoryData:self.historyIndex];
+            } else if (buttonIndex == 0) {
+                [SVProgressHUD dismiss];
+            }
+        }];
+        [alertView show];
+        
+        return;
+    }
+    
+    
     [SVProgressHUD dismiss];
     [SVProgressHUD showInfoWithStatus:error];
     NSLog(@">>>>>error:%@",error);

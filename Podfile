@@ -11,5 +11,6 @@ target ‘Mfise’ do
     pod 'Masonry'
     pod 'YBPopupMenu', '~> 1.1.2'
     pod 'AFNetworking'
-    
+    pod 'BlocksKit'
+
 end

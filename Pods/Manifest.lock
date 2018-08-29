@@ -14,6 +14,21 @@ PODS:
   - AFNetworking/Serialization (3.2.1)
   - AFNetworking/UIKit (3.2.1):
     - AFNetworking/NSURLSession
+  - BlocksKit (2.2.5):
+    - BlocksKit/All (= 2.2.5)
+  - BlocksKit/All (2.2.5):
+    - BlocksKit/Core
+    - BlocksKit/DynamicDelegate
+    - BlocksKit/MessageUI
+    - BlocksKit/UIKit
+  - BlocksKit/Core (2.2.5)
+  - BlocksKit/DynamicDelegate (2.2.5)
+  - BlocksKit/MessageUI (2.2.5):
+    - BlocksKit/Core
+    - BlocksKit/DynamicDelegate
+  - BlocksKit/UIKit (2.2.5):
+    - BlocksKit/Core
+    - BlocksKit/DynamicDelegate
   - IQKeyboardManager (6.1.1)
   - LCActionSheet (3.5.0):
     - Masonry (~> 1.1.0)
@@ -26,6 +41,7 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking
+  - BlocksKit
   - IQKeyboardManager
   - LCActionSheet
   - Masonry
@@ -38,6 +54,7 @@ DEPENDENCIES:
 SPEC REPOS:
   https://github.com/cocoapods/specs.git:
     - AFNetworking
+    - BlocksKit
     - IQKeyboardManager
     - LCActionSheet
     - Masonry
@@ -57,6 +74,7 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
+  BlocksKit: 7f422b971407001178d181a43b99014ea2591fe6
   IQKeyboardManager: 79c57795f5c2408d259d37b9da2ed07efcbb5225
   LCActionSheet: b30611ab20290fc830976b7ae90ea2dd4142fb1c
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
@@ -66,6 +84,6 @@ SPEC CHECKSUMS:
   Toast: 91b396c56ee72a5790816f40d3a94dd357abc196
   YBPopupMenu: 6efb286385d95ba5f97c58b8464ec873645e8764
 
-PODFILE CHECKSUM: 000d8476e12ca2c5ef772a7c54a25f6c510e0d62
+PODFILE CHECKSUM: cc87eab54675ba3a4b2fb59f6240e17d43df406e
 
-COCOAPODS: 1.5.3
+COCOAPODS: 1.6.0.beta.1
