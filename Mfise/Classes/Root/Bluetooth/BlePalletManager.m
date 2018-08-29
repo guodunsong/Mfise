@@ -9,9 +9,6 @@
 #import "BlePalletManager.h"
 #import "MJExtension.h"
 #import "BleDataUtil.h"
-#import "BleSendModel.h"
-#import "BleReceiveModel.h"
-
 
 #define kMaxResentCount  3
 #define kTimeInterval 3.0f
@@ -22,8 +19,6 @@
 
 
 @property (nonatomic, strong) BLEManager *bleMgr;
-@property (nonatomic, strong) BleSendModel *sendModel;      //蓝牙发送model
-@property (nonatomic, strong) BleReceiveModel *receiveModel;//蓝牙接收数据model
 @property (nonatomic, strong) BLEPeripheral *peripheral;     //外围设备
 @property (nonatomic, assign) NSInteger tag;
 
@@ -37,6 +32,7 @@
 
 - (instancetype)initWithDelegate:delegate {
     if (self = [super init]) {
+        self.curSendData = nil;
         self.delegate = delegate;
         self.bleMgr = [BLEManager sharedInstance];
         self.bleMgr.connectTimeout = 20;
@@ -231,7 +227,7 @@
     
     //取消重发机制
     [self cancelRewrite];
-    NSLog(@"分包发送(%ld)::>>%@",pkgIndex,[BleDataUtil data2Hex:data]);
+    NSLog(@"分包发送(%ld)::>>%@",pkgIndex,[BleDataUtil data2Hex:sendData]);
     [self.bleMgr sendData:sendData toPeripheral:self.peripheral characteristicUUID:kWriteUUID completion:^(NSNumber * _Nullable success, NSError * _Nullable error) {
     }];
     
@@ -248,7 +244,6 @@
     
     NSMutableData *answerData = [self.receiveModel appendPartData:data];
     if(answerData == nil) {
-
         return;
     };
 
@@ -317,6 +312,9 @@
     }
     
     NSLog(@">>>>>>重发(%@):%@",@(self.resentCount),[BleDataUtil data2Hex:self.curSendData]);
+    if (self.curSendData == nil) {
+        return;
+    }
     [self.bleMgr sendData:self.curSendData toPeripheral:self.peripheral characteristicUUID:kWriteUUID completion:^(NSNumber * _Nullable success, NSError * _Nullable error) {
     }];
 }

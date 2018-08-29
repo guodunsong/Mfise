@@ -113,6 +113,16 @@
     [self.tableView reloadData];
 }
 
+- (NSMutableDictionary *)itemDic:(NSDictionary *)dic {
+    NSMutableDictionary *itemDic = [[NSMutableDictionary alloc] initWithDictionary:dic];
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"YYYY-MM-dd HH:mm:ss"];
+    NSDate *datenow = [NSDate date];
+    NSString *currentTimeString = [formatter stringFromDate:datenow];
+    itemDic[@"currentTimeString"] = currentTimeString;
+    
+    return itemDic;
+}
 
 #pragma mark -
 #pragma mark action method
@@ -149,13 +159,14 @@
         return;
     }
     
-    NSMutableDictionary *itemDic = [[NSMutableDictionary alloc] initWithDictionary:self.terminalInfoDic];
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    [formatter setDateFormat:@"YYYY-MM-dd HH:mm:ss"];
-    NSDate *datenow = [NSDate date];
-    NSString *currentTimeString = [formatter stringFromDate:datenow];
-    itemDic[@"currentTimeString"] = currentTimeString;
+//    NSMutableDictionary *itemDic = [[NSMutableDictionary alloc] initWithDictionary:self.terminalInfoDic];
+//    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+//    [formatter setDateFormat:@"YYYY-MM-dd HH:mm:ss"];
+//    NSDate *datenow = [NSDate date];
+//    NSString *currentTimeString = [formatter stringFromDate:datenow];
+//    itemDic[@"currentTimeString"] = currentTimeString;
     
+    NSMutableDictionary *itemDic = [self itemDic:self.terminalInfoDic];
     NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
     params[@"positions"] = @[itemDic];
     
@@ -175,10 +186,20 @@
 }
 
 - (void)fetchHistoryData:(NSInteger) index {
+    
     if (index >= 13) {
-        //这里本来要做上传的
-        //...
-        //...
+        
+        if (self.historyArr.count <= 0) return;
+        
+        NSMutableArray *arr = [NSMutableArray array];
+        for (NSMutableDictionary *dic in self.historyArr) {
+            [arr addObject:[self itemDic:dic]];
+        }
+        
+        NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
+        params[@"positions"] = arr;
+        [SVProgressHUD showWithStatus:@"正在上传历史数据"];
+        [self reqSaveDeviceInfo:params];
         
         return;
     }
@@ -289,7 +310,7 @@
 }
 
 - (void)blePalletManager:(BlePalletManager *)blePalletManager tag:(NSInteger)tag didResult:(NSString *)result {
-    [SVProgressHUD dismiss];
+    
     NSLog(@">>>>>>result:%@",result);
 
     NSString *str = [result stringByReplacingOccurrencesOfString:@"*#SP2DATA*" withString:@""];
@@ -300,11 +321,15 @@
         NSInteger index = (tag - 3000) + 1;
         [_historyArr addObject:resDic];
         NSLog(@">>>>>>历史记录:%@",@(_historyArr.count));
-        [NSThread sleepForTimeInterval:1];
-        [self fetchHistoryData:index];
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+           [self fetchHistoryData:index];
+        });
+        
         return;
     }
     
+    [SVProgressHUD dismiss];
     //获取历史记录
     if (tag == 1000) {
         self.terminalInfoDic = resDic;

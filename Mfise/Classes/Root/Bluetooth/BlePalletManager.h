@@ -9,6 +9,9 @@
 #import <Foundation/Foundation.h>
 #import "BLEManager.h"
 #import "BLEPeripheral.h"
+#import "BleSendModel.h"
+#import "BleReceiveModel.h"
+
 
 @class BlePalletManager;
 @protocol BlePalletManagerDelegate<NSObject>
@@ -19,6 +22,8 @@
 @end
 
 @interface BlePalletManager : NSObject
+@property (nonatomic, strong) BleSendModel *sendModel;      //蓝牙发送model
+@property (nonatomic, strong) BleReceiveModel *receiveModel;//蓝牙接收数据model
 @property(nonatomic, weak) id<BlePalletManagerDelegate> delegate;
 
 

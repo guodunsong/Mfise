@@ -38,6 +38,7 @@ static NSInteger kCmdIndex = 0;
         }
         
         self.pkgDataArr = [NSMutableArray array];
+        [self.pkgDataArr removeAllObjects];
         NSData *jsonData = [self.jsonStr dataUsingEncoding:(NSUTF8StringEncoding)];
         int8_t *jsonByte = malloc(jsonData.length);
         [jsonData getBytes:jsonByte range:NSMakeRange(0, jsonData.length)];
