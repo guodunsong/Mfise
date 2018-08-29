@@ -18,6 +18,7 @@
 - (instancetype)init {
     if (self = [super init]) {
         self.dataArr = [NSMutableArray array];
+        [self.dataArr removeAllObjects];
     }
     return self;
 }
@@ -34,8 +35,10 @@
     
     NSData *partData = [[NSData alloc] initWithBytes:partByte length:len];
     
+    NSLog(@">>>>>总包数量:%@,分包序号:%@",@(paramByte[2]),@(paramByte[1] & 0x3F));
     //去掉重复包
     if ([self.dataArr containsObject:partData]) {
+        NSLog(@">>>>>>>>>去掉重复包");
         return nil;
     }
     

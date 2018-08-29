@@ -50,6 +50,7 @@
     _selectedIndexSet = [NSMutableIndexSet indexSet];
     _bleMgr = [BLEManager sharedInstance];
     _blePalletMgr = [[BlePalletManager alloc] initWithDelegate:self];
+    
 }
 
 - (void)didReceiveMemoryWarning {

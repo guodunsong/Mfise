@@ -13,11 +13,13 @@
 #import "BleReceiveModel.h"
 
 
-#define kMaxResent  3
+#define kMaxResentCount  3
+#define kTimeInterval 3.0f
 
 @interface BlePalletManager() {
     NSString *_iccid;
 }
+
 
 @property (nonatomic, strong) BLEManager *bleMgr;
 @property (nonatomic, strong) BleSendModel *sendModel;      //蓝牙发送model
@@ -27,7 +29,7 @@
 
 @property (nonatomic, strong) NSTimer *timer;       //重发
 @property (nonatomic, strong) NSData *curSendData;  //当前重发的数据
-@property (nonatomic, assign) NSInteger resent;     //重发次数
+@property (nonatomic, assign) NSInteger resentCount;     //重发次数
 
 @end
 
@@ -38,6 +40,9 @@
         self.delegate = delegate;
         self.bleMgr = [BLEManager sharedInstance];
         self.bleMgr.connectTimeout = 20;
+        self.bleMgr.sendDataTimeout = 10;
+        
+        
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(disconnectedNotifaction:) name:BLENotificationDisconnected object:nil];
     }
     
@@ -88,10 +93,7 @@
 
 - (void)disconnect {
     [self.bleMgr disconnectPeripheral:self.peripheral completion:^(NSNumber * _Nullable success, NSError * _Nullable error) {
-        NSLog(@">>>>>>>:%@",success);
-        NSLog(@">>>>>>>:%@",error.description);
     }];
-    
 }
 
 
@@ -185,15 +187,21 @@
         return;
     }
     
+    
     //唤醒后要等6s开发发包
+    [self.sendModel.hasSendIndexSet removeAllIndexes];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 6 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
         NSData *data = [self.sendModel dataForPkgIndex:1];//发送第一包
+        if (data == nil) {
+            return;
+        }
         NSLog(@"分包发送(1)::>>%@",[BleDataUtil data2Hex:data]);
-        [self.bleMgr sendData:data toPeripheral:self.peripheral characteristicUUID:kWriteUUID completion:^(NSNumber * _Nullable success, NSError * _Nullable error) {}];
+        [self.bleMgr sendData:data toPeripheral:self.peripheral characteristicUUID:kWriteUUID completion:^(NSNumber * _Nullable success, NSError * _Nullable error) {
+        }];
         
         
         //timer创建重发机制
-        [self createTimer:data];
+        [self openRewrite:data];
     });
 }
 
@@ -204,24 +212,30 @@
  @param data data description
  */
 - (void)anwserBleData:(NSData *)data {
-    
     //获取未发送的包
     NSInteger len = data.length - 4;
     if (len <= 0) {
+        //清空回包信息（准备接收）
+        [self.receiveModel.dataArr removeAllObjects];
         return;
     }
     
-    //取消timer的重发机制
-    [self destoryTimer];
-
+   
     int8_t *unsentPkgByte = malloc(len);
     [data getBytes:unsentPkgByte range: NSMakeRange(4, len)];
     NSInteger pkgIndex = unsentPkgByte[0];
     NSData *sendData = [self.sendModel dataForPkgIndex:pkgIndex];
-    NSLog(@"分包发送(%ld)::>>%@",pkgIndex,[BleDataUtil data2Hex:data]);
-    [self.bleMgr sendData:sendData toPeripheral:self.peripheral characteristicUUID:kWriteUUID completion:^(NSNumber * _Nullable success, NSError * _Nullable error) {}];
+    if (sendData == nil) {
+        return;
+    }
     
-    [self createTimer: sendData];
+    //取消重发机制
+    [self cancelRewrite];
+    NSLog(@"分包发送(%ld)::>>%@",pkgIndex,[BleDataUtil data2Hex:data]);
+    [self.bleMgr sendData:sendData toPeripheral:self.peripheral characteristicUUID:kWriteUUID completion:^(NSNumber * _Nullable success, NSError * _Nullable error) {
+    }];
+    
+    [self openRewrite:sendData];
 }
 
 
@@ -231,18 +245,24 @@
  @param data data description
  */
 - (void)receiveBleData:(NSData *)data {
-    [self destoryTimer]; //取消重发机制
-    
     
     NSMutableData *answerData = [self.receiveModel appendPartData:data];
-    if(answerData == nil) return;
+    if(answerData == nil) {
+
+        return;
+    };
+
+    [self cancelRewrite]; //取消重发机制
     NSLog(@"回包发送::>>%@",[BleDataUtil data2Hex:answerData]);
-    [self.bleMgr sendData:answerData toPeripheral:self.peripheral characteristicUUID:kWriteUUID completion:^(id data, NSError *error) {}];
+    [self.bleMgr sendData:answerData toPeripheral:self.peripheral characteristicUUID:kWriteUUID completion:^(id data, NSError *error) {
+    }];
     
-    [self createTimer:answerData];
+    //打开重发
+    [self openRewrite:answerData];
     //数据发送完成，可以获取结果了
     if (answerData.length == 4) {
-        [self destoryTimer];
+        [self cancelRewrite];
+        
         if (self.delegate && [self.delegate respondsToSelector:@selector(blePalletManager:tag:didResult:)]) {
             NSString *result = self.receiveModel.result;
             
@@ -258,18 +278,33 @@
 #pragma mark -
 #pragma mark timer重发机制 method
 
-- (void)createTimer:(NSData *)data {
+//开启重发
+- (void)openRewrite:(NSData *)data {
     self.curSendData = data;
-    self.resent = 0;
-    __weak typeof(self) weakSelf = self;
-    _timer = [NSTimer scheduledTimerWithTimeInterval:1.0f target:weakSelf selector:@selector(timerFire:) userInfo:nil repeats:YES];
+    self.resentCount = 0;
     
+    [self.timer setFireDate:[NSDate dateWithTimeIntervalSinceNow:kTimeInterval]];
+}
+
+//取消重发
+- (void)cancelRewrite {
+    [self.timer setFireDate:[NSDate distantFuture]];
+}
+
+- (NSTimer *)timer {
+    if (_timer == nil) {
+        NSLog(@">>>>>>>create timer");
+        _timer = [NSTimer scheduledTimerWithTimeInterval:kTimeInterval target:self selector:@selector(timerFire:) userInfo:nil repeats:YES];
+        [_timer setFireDate:[NSDate distantFuture]];
+    }
+    
+    return _timer;
 }
 
 - (void)timerFire:(NSTimer *)timer {
-    self.resent = self.resent + 1;
-    if (self.resent > kMaxResent) {
-        [self destoryTimer];
+    self.resentCount = self.resentCount + 1;
+    if (self.resentCount > kMaxResentCount) {
+        [self cancelRewrite];
         
         if (self.delegate && [self.delegate respondsToSelector:@selector(blePalletManager:tag: didWithError:)]) {
             dispatch_async(dispatch_get_main_queue(), ^{
@@ -280,15 +315,10 @@
         
         return;
     }
-    NSLog(@">>>>>>重发:(%@)",@(self.resent));
-    [self.bleMgr sendData:self.curSendData toPeripheral:self.peripheral characteristicUUID:kWriteUUID completion:^(NSNumber * _Nullable success, NSError * _Nullable error) {}];
-}
-
-- (void)destoryTimer {
-    if (_timer) {
-        [_timer invalidate];
-        _timer = nil;
-    }
+    
+    NSLog(@">>>>>>重发(%@):%@",@(self.resentCount),[BleDataUtil data2Hex:self.curSendData]);
+    [self.bleMgr sendData:self.curSendData toPeripheral:self.peripheral characteristicUUID:kWriteUUID completion:^(NSNumber * _Nullable success, NSError * _Nullable error) {
+    }];
 }
 
 @end

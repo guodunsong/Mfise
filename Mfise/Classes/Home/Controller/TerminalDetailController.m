@@ -29,6 +29,8 @@
 @property (weak, nonatomic) IBOutlet UIButton *uploadCurtBtn;
 
 @property (nonatomic, strong) BlePalletManager *blePallteMgr;
+@property (nonatomic, strong) NSMutableArray *historyArr;
+@property (nonatomic, assign) NSInteger historyIndex;
 
 
 @end
@@ -45,6 +47,7 @@
     _blePallteMgr = [[BlePalletManager alloc] initWithDelegate:self];
     [SVProgressHUD showWithStatus:@"正在连接设备"];
     [_blePallteMgr connectBleDevice:self.peripheral tag:1000];
+    _historyArr = [NSMutableArray array];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -166,7 +169,25 @@
  @param sender sender description
  */
 - (IBAction)onUploadAllBtn:(UIButton *)sender {
+    _historyIndex = 0;
+    [_historyArr removeAllObjects];
+    [self fetchHistoryData:_historyIndex];
+}
+
+- (void)fetchHistoryData:(NSInteger) index {
+    if (index >= 13) {
+        //这里本来要做上传的
+        //...
+        //...
+        
+        return;
+    }
     
+    [SVProgressHUD showWithStatus:@"正在读取数据"];
+    NSString *ICCID = [self.peripheral.peripheral.name stringByReplacingOccurrencesOfString:@"SP" withString:@""];
+    NSDictionary *jsonDic = @{@"CMD":@(0),@"ICCID":ICCID,@"Index":@(index)};
+    NSLog(@">>>>:%@",[jsonDic mj_JSONString]);
+    [_blePallteMgr fetchWithTag:(3000 + index) params:jsonDic];
     
 }
 
@@ -275,6 +296,15 @@
     str = [str stringByReplacingOccurrencesOfString:@"#" withString:@""];
     NSMutableDictionary *resDic = [[NSMutableDictionary alloc] initWithDictionary:[str mj_JSONObject]];
     
+    if (tag >= 3000) {
+        NSInteger index = (tag - 3000) + 1;
+        [_historyArr addObject:resDic];
+        NSLog(@">>>>>>历史记录:%@",@(_historyArr.count));
+        [NSThread sleepForTimeInterval:1];
+        [self fetchHistoryData:index];
+        return;
+    }
+    
     //获取历史记录
     if (tag == 1000) {
         self.terminalInfoDic = resDic;
@@ -294,6 +324,7 @@
 
 - (void)blePalletManager:(BlePalletManager *)blePalletManager tag:(NSInteger)tag didWithError:(NSString *)error {
     [SVProgressHUD dismiss];
+    [SVProgressHUD showInfoWithStatus:error];
     NSLog(@">>>>>error:%@",error);
 }
 

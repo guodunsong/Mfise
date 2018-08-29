@@ -26,6 +26,7 @@
 @property (nonatomic, assign) NSInteger pkgCount;
 @property (nonatomic, assign) NSInteger pkgIndex;
 @property (nonatomic, assign) NSInteger cmdIndex;
+@property (nonatomic, strong) NSMutableIndexSet *hasSendIndexSet; //已经发送过的命令
 
 - (instancetype)initWithDic: (NSDictionary *)dic;
 - (NSMutableData *)dataForPkgIndex:(NSInteger)index;

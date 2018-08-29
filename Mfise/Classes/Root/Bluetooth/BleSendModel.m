@@ -26,6 +26,9 @@ static NSInteger kCmdIndex = 0;
 
 - (instancetype)initWithDic:(NSDictionary *)dic {
     if (self = [super init]) {
+        self.hasSendIndexSet = [NSMutableIndexSet indexSet];
+        [self.hasSendIndexSet removeAllIndexes];
+        
         self.jsonDic = dic;
         self.pkgIndex = 1;
         self.cmdIndex = kCmdIndex;
@@ -87,8 +90,13 @@ static NSInteger kCmdIndex = 0;
 }
 
 - (NSMutableData *)dataForPkgIndex: (NSInteger)index {
-    self.pkgIndex = index;
+    if ([_hasSendIndexSet containsIndex:index]) {
+        NSLog(@">>>>>此命令已经发送过");
+        return nil;
+    }
     
+    [self.hasSendIndexSet addIndex:index];
+    self.pkgIndex = index;
     int8_t *pkgCmdByte = malloc(1);
     int8_t *pkgCountByte = malloc(1);
     
