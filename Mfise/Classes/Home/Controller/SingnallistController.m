@@ -13,6 +13,7 @@
 #import "TerminalDetailController.h"
 #import "SingnallistCell.h"
 #import "UploadRateView.h"
+#import "UIAlertView+BlocksKit.h"
 
 @interface SingnallistController ()<UITableViewDataSource,UITableViewDelegate,BlePalletManagerDelegate> {
 }
@@ -73,7 +74,11 @@
     _curIndex = index;
     
     dispatch_async(dispatch_get_main_queue(), ^{
+        
         [self.tableView reloadData];
+        NSInteger rowIndex = [self.dataArr indexOfObject:self.selectedArr[index]];
+        NSIndexPath *indexPath = [NSIndexPath indexPathForRow:rowIndex inSection:0];
+        [self.tableView scrollToRowAtIndexPath:indexPath atScrollPosition:(UITableViewScrollPositionBottom) animated:YES];
     });
     BLEPeripheral *peripheral = [self.selectedArr objectAtIndex:index];
     if (peripheral.state == BLEPeripheralStateUnknown) {
@@ -189,6 +194,10 @@
     
     
     
+    
+    if([self.refreshBtn.title isEqualToString:@"停止"]) {
+        [self onRefresh:self.refreshBtn];
+    }
     UploadRateView *uploadRateView = [UploadRateView createViewFromNib];
     __typeof (self) __weak weakself = self;
     uploadRateView.complete = ^(NSString *str) {
@@ -316,12 +325,38 @@
     }
     
     self.configuring = NO;
-    [self.tableView reloadData];
-    [SVProgressHUD showSuccessWithStatus:@"批量配置完成"];
+//    [SVProgressHUD showSuccessWithStatus:@"批量配置完成"];
+    NSMutableArray *arr = [NSMutableArray array];
+    for(BLEPeripheral *peripheral in self.selectedArr) {
+        [arr addObject:peripheral.peripheral.name];
+    }
+    
+    NSString *message = [NSString stringWithFormat:@"设备(%@)已成功配置",[arr componentsJoinedByString:@" "]];
+    UIAlertView *alertView = [UIAlertView bk_showAlertViewWithTitle:@"批量配置完成" message:message cancelButtonTitle:@"取消" otherButtonTitles:@[@"确定"] handler:^(UIAlertView *alertView, NSInteger buttonIndex) {
+            [self.selectedIndexSet removeAllIndexes];
+            [self.selectedArr removeAllObjects];
+            [self.tableView reloadData];
+    }];
+    [alertView show];
+    
 }
 
 - (void)blePalletManager:(BlePalletManager *)blePalletManager tag:(NSInteger)tag didWithError:(NSString *)error {
+    if (_configuring && _curIndex < self.selectedArr.count) {
+        UIAlertView *alertView = [UIAlertView bk_showAlertViewWithTitle:@"错误提示" message:@"批量配置中途失败，是否继续配置" cancelButtonTitle:@"取消" otherButtonTitles:@[@"继续"] handler:^(UIAlertView *alertView, NSInteger buttonIndex) {
+            if (buttonIndex == 1) {
+                [self executeBatchConfig:self.curIndex];
+            } else if (buttonIndex == 0) {
+                [SVProgressHUD dismiss];
+            }
+        }];
+        [alertView show];
+        
+        return;
+    }
+    
     [SVProgressHUD dismiss];
+    [SVProgressHUD showInfoWithStatus:error];
 }
 
 - (void)blePalletManager:(BlePalletManager *)blePalletManager tag:(NSInteger)tag didConnectComplete: (NSNumber *)success error:(NSError *)error {
